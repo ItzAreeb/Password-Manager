@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,7 +34,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             PasswordManagerTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
+                    HomePage(
                         //name = "Android",
                         modifier = Modifier.padding(innerPadding)
                     )
@@ -44,7 +45,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(modifier: Modifier = Modifier) {
+fun HomePage(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
     ) {
@@ -56,31 +57,46 @@ fun Greeting(modifier: Modifier = Modifier) {
                 .align(Alignment.CenterHorizontally)
                 .padding(16.dp)
         )
-        Box (
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(65.dp)
+        for(i in 1..6) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(65.dp)
+            ) {
+                Text(
+                    text = "sample@email.com",
+                    color = Color.Blue,
+                    fontSize = 25.sp,
+                )
+                Text(
+                    text = "password",
+                    color = Color.Blue,
+                    fontSize = 25.sp,
+                    modifier = Modifier.align(Alignment.BottomEnd)
+                )
+            }
+        }
+        Button(
+            onClick = { /* Handle button click */ },
+            modifier = Modifier.align(Alignment.End)
         ) {
-            Text(
-                text = "sample@email.com",
-                color = Color.Blue,
-                fontSize = 25.sp,
-            )
-            Text(
-                text = "password",
-                color = Color.Blue,
-                fontSize = 25.sp,
-                modifier = Modifier.align(Alignment.BottomEnd)
-            )
+            Text("New")
         }
     }
+}
+
+@Composable
+fun CreateAccount(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+    ) {}
 }
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     PasswordManagerTheme {
-        Greeting(modifier = Modifier
+        HomePage(modifier = Modifier
             .fillMaxSize()
         )
     }
