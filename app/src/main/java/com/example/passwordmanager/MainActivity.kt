@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavHost(navController, startDestination = "home") {
                         composable("home") { HomeScreen(navController, Modifier.padding(innerPadding), accounts) }
-                        composable("createAccount") { CreateAccountScreen(navController, Modifier.padding(innerPadding), accounts) }
+                        composable("createAccount") { CreateAccountScreen(navController, Modifier, accounts) }
                     }
                 }
             }

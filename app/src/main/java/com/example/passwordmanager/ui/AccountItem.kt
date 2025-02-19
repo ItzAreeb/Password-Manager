@@ -1,8 +1,12 @@
 package com.example.passwordmanager.ui
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Divider
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -37,10 +41,10 @@ fun AccountItem(account: Account) {
             )
         }
 
-        Divider(
-            color = Color.Gray, // Google-style separator
+        HorizontalDivider(
+            modifier = Modifier.padding(horizontal = 16.dp),
             thickness = 1.dp,
-            modifier = Modifier.padding(horizontal = 16.dp)
+            color = Color.Gray // Google-style separator
         )
     }
 }
