@@ -1,28 +1,61 @@
 package com.example.passwordmanager.ui
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.passwordmanager.data.Account
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController, modifier: Modifier = Modifier, accounts: List<Account>) {
+    var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
+
     Column(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Password Manager",
-            fontSize = 30.sp,
-            modifier = Modifier.padding(16.dp)
+        // Rounded Search Bar
+        TextField(
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            label = { Text("Search...") },
+            singleLine = true,
+            shape = RoundedCornerShape(50.dp), // Fully rounded corners
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            colors = TextFieldDefaults.textFieldColors(
+                focusedIndicatorColor = Color.Transparent, // Remove underline when focused
+                unfocusedIndicatorColor = Color.Transparent, // Remove underline when not focused
+                disabledIndicatorColor = Color.Transparent // Remove underline when disabled
+            )
         )
 
-        accounts.forEach { account ->
+
+        // Filtered Account List
+        val filteredAccounts = accounts.filter {
+            it.getName().contains(searchQuery.text, ignoreCase = true)
+        }
+
+        filteredAccounts.forEach { account ->
             AccountItem(account)
         }
 

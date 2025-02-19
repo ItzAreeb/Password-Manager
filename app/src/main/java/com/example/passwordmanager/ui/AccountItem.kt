@@ -1,14 +1,10 @@
 package com.example.passwordmanager.ui
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,22 +14,24 @@ import com.example.passwordmanager.data.Account
 
 @Composable
 fun AccountItem(account: Account) {
+    var isPasswordVisible by remember { mutableStateOf(false) }
+
     Column {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(65.dp)
-                .clickable { /* Handle account click */ }
+                .clickable { isPasswordVisible = !isPasswordVisible } // Toggle password visibility
         ) {
             Text(
                 text = account.getName(),
-                color = Color.Blue,
+                color = Color.Black,
                 fontSize = 25.sp,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 2.dp)
             )
             Text(
-                text = account.getPassword(),
-                color = Color.Black,
+                text = if (isPasswordVisible) account.getPassword() else "••••••••",
+                color = Color(0xFF3C4043),
                 fontSize = 25.sp,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
