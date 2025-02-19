@@ -4,7 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.*
+import com.example.passwordmanager.data.Account
 import com.example.passwordmanager.ui.theme.PasswordManagerTheme
 
 class MainActivity : ComponentActivity() {
@@ -26,11 +31,12 @@ class MainActivity : ComponentActivity() {
         setContent {
             PasswordManagerTheme {
                 val navController = rememberNavController()
+                val accounts = remember { mutableStateListOf<Account>() }
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavHost(navController, startDestination = "home") {
-                        composable("home") { HomePage(navController, Modifier.padding(innerPadding)) }
-                        composable("createAccount") { CreateAccount(navController) }
+                        composable("home") { HomePage(navController, Modifier.padding(innerPadding), accounts) }
+                        composable("createAccount") { CreateAccount(navController, Modifier.padding(innerPadding), accounts) }
                     }
                 }
             }
@@ -40,51 +46,78 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun HomePage(navController: NavController, modifier: Modifier = Modifier) {
+fun HomePage(navController: NavController, modifier: Modifier = Modifier, accounts: List<Account>) {
     Column(
         modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = "Password Manager",
-            color = Color.Blue,
+            color = Color.Black,
             fontSize = 30.sp,
             modifier = Modifier.padding(16.dp)
         )
 
-        for (i in 1..6) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(65.dp)
-                    .padding(8.dp)
-            ) {
-                Text(text = "sample@email.com", color = Color.Blue, fontSize = 25.sp)
-                Text(
-                    text = "password",
-                    color = Color.Blue,
-                    fontSize = 25.sp,
-                    modifier = Modifier.align(Alignment.BottomEnd)
+        for (i in accounts.indices) {
+            Column {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(65.dp)
+                        .clickable { /* Handle account click */ }
+                ) {
+                    Text(
+                        text = accounts[i].getName(),
+                        color = Color.Blue,
+                        fontSize = 25.sp,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 2.dp)
+                    )
+                    Text(
+                        text = accounts[i].getPassword(),
+                        color = Color.Black,
+                        fontSize = 25.sp,
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(horizontal = 16.dp, vertical = 2.dp)
+                    )
+                }
+
+                Divider(
+                    color = Color.Gray, // Use a subtle gray color
+                    thickness = 1.dp, // Thin line for separation
+                    modifier = Modifier.padding(horizontal = 16.dp) // Adds margin to match text alignment
                 )
             }
         }
 
+
         Spacer(modifier = Modifier.weight(1f)) // Pushes button to bottom
 
         Button(
-            onClick = { navController.navigate("createAccount") }, // Navigates to Create Account page
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+            onClick = { navController.navigate("createAccount") },
+            modifier = Modifier
+                .padding(10.dp)
+                .align(Alignment.End)
+                .size(70.dp), // Increase button size
+            shape = RoundedCornerShape(17.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3C4043))
         ) {
-            Text("Create Account")
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Create Account",
+                tint = Color.White,
+                modifier = Modifier.size(50.dp) // Explicitly set icon size
+            )
         }
+
+
     }
 }
 
 
 @Composable
-fun CreateAccount(navController: NavController, modifier: Modifier = Modifier) {
+fun CreateAccount(navController: NavController, modifier: Modifier = Modifier, accounts: MutableList<Account>) {
     var username by remember { mutableStateOf(TextFieldValue("")) }
     var password by remember { mutableStateOf(TextFieldValue("")) }
 
@@ -121,7 +154,13 @@ fun CreateAccount(navController: NavController, modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { /* Handle account creation logic here */ },
+            onClick = {
+                val newAccount = Account()
+                newAccount.setName(username.text)
+                newAccount.setPassword(password.text)
+                if (newAccount.getName().isNotEmpty() && newAccount.getPassword().isNotEmpty()) accounts.add(newAccount)
+                navController.popBackStack()
+                      },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Submit")
@@ -144,11 +183,13 @@ fun CreateAccount(navController: NavController, modifier: Modifier = Modifier) {
 fun GreetingPreview() {
     PasswordManagerTheme {
         val navController = rememberNavController()
-
+        val accounts = remember { mutableStateListOf<Account>() }
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             NavHost(navController, startDestination = "home") {
-                composable("home") { HomePage(navController, Modifier.padding(innerPadding)) }
-                composable("createAccount") { CreateAccount(navController) }
+                composable("home") {
+                    HomePage(navController, Modifier.padding(innerPadding), accounts)
+                }
+                composable("createAccount") { CreateAccount(navController, Modifier.padding(innerPadding), accounts) }
             }
         }
     }
