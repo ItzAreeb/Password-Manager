@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,18 +25,16 @@ fun FloatingAddButton(onClick: () -> Unit) {
             .padding(10.dp),
         contentAlignment = Alignment.BottomEnd
     ) {
-        Button(
+        FloatingActionButton(
             onClick = onClick,
             modifier = Modifier
-                .size(70.dp),
+                .size(58.dp),
             shape = RoundedCornerShape(17.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3C4043))
         ) {
             Icon(
                 imageVector = Icons.Default.Add,
                 contentDescription = "Create Account",
-                tint = Color.White,
-                modifier = Modifier.size(50.dp)
+                modifier = Modifier.size(40.dp)
             )
         }
     }

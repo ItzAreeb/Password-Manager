@@ -41,7 +41,7 @@ fun HomeScreen(navController: NavController, modifier: Modifier = Modifier, acco
             shape = RoundedCornerShape(50.dp), // Fully rounded corners
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(8.dp),
             colors = TextFieldDefaults.textFieldColors(
                 focusedIndicatorColor = Color.Transparent, // Remove underline when focused
                 unfocusedIndicatorColor = Color.Transparent, // Remove underline when not focused

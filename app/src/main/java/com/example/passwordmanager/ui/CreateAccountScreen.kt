@@ -68,8 +68,6 @@ fun CreateAccountScreen(navController: NavController, modifier: Modifier = Modif
                 modifier = Modifier.fillMaxWidth(),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     containerColor = Color.Transparent, // Transparent background
-                    focusedBorderColor = Color.Black, // Border color when focused
-                    unfocusedBorderColor = Color.Gray // Border color when not focused
                 )
             )
 
@@ -83,8 +81,6 @@ fun CreateAccountScreen(navController: NavController, modifier: Modifier = Modif
                 modifier = Modifier.fillMaxWidth(),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     containerColor = Color.Transparent,
-                    focusedBorderColor = Color.Black,
-                    unfocusedBorderColor = Color.Gray
                 )
             )
 
