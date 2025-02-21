@@ -1,5 +1,6 @@
 package com.example.passwordmanager.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,7 +15,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -65,10 +65,9 @@ fun CreateAccountScreen(navController: NavController, modifier: Modifier = Modif
                 value = username,
                 onValueChange = { username = it },
                 label = { Text("Username") },
-                modifier = Modifier.fillMaxWidth(),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    containerColor = Color.Transparent, // Transparent background
-                )
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.Transparent)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -78,10 +77,9 @@ fun CreateAccountScreen(navController: NavController, modifier: Modifier = Modif
                 onValueChange = { password = it },
                 label = { Text("Password") },
                 visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth(),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    containerColor = Color.Transparent,
-                )
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.Transparent)
             )
 
             Spacer(modifier = Modifier.weight(1f))
