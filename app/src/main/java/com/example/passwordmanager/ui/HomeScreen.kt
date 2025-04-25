@@ -24,6 +24,7 @@ fun HomeScreen(navController: NavController, modifier: Modifier = Modifier, acco
     val context = LocalContext.current
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
     var editingAccount by remember { mutableStateOf<Account?>(null) }
+    var deletingAccount by remember { mutableStateOf<Account?>(null) }
 
     Box {
         Column(
@@ -58,6 +59,9 @@ fun HomeScreen(navController: NavController, modifier: Modifier = Modifier, acco
                     context = context,
                     onEdit = { accountToEdit ->
                         editingAccount = accountToEdit
+                    },
+                    onDelete = { accountToDelete ->
+                        deletingAccount = accountToDelete
                     }
                 )
             }
@@ -77,6 +81,19 @@ fun HomeScreen(navController: NavController, modifier: Modifier = Modifier, acco
                         accounts[index] = updatedAccount
                     }
                     editingAccount = null
+                }
+            )
+        }
+        deletingAccount?.let { account ->
+            DeleteAccountDialog(
+                account = account,
+                onDismiss = { deletingAccount = null },
+                onDelete = {
+                    val index = accounts.indexOfFirst { it.getName() == account.getName() }
+                    if (index != -1) {
+                        accounts.removeAt(index)
+                    }
+                    deletingAccount = null
                 }
             )
         }
@@ -125,6 +142,56 @@ fun EditAccountDialog(
         },
         dismissButton = {
             Button(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
+@Composable
+fun DeleteAccountDialog(
+    account: Account,
+    onDismiss: () -> Unit,
+    onDelete: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "Delete Account",
+                color = MaterialTheme.colorScheme.error
+            )
+        },
+        text = {
+            Column {
+                Text("Are you sure you want to delete this account?")
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = account.getName(),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+                Text(
+                    text = "This action cannot be undone",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = onDelete,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error,
+                    contentColor = MaterialTheme.colorScheme.onError
+                )
+            ) {
+                Text("Delete")
+            }
+        },
+        dismissButton = {
+            OutlinedButton(onClick = onDismiss) {
                 Text("Cancel")
             }
         }

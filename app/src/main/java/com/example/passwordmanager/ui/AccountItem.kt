@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.passwordmanager.data.Account
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -40,11 +41,16 @@ import kotlin.math.roundToInt
 fun AccountItem(
     account: Account,
     context: Context,
-    onEdit: (Account) -> Unit
+    onEdit: (Account) -> Unit,
+    onDelete: (Account) -> Unit
 ) {
     var isPasswordVisible by remember { mutableStateOf(false) }
     var offsetX by remember { mutableFloatStateOf(0f) }
     var isSwiped by remember { mutableStateOf(false) }
+    var swipeDirection by remember { mutableStateOf("") }
+    var swipeText by remember { mutableStateOf("") }
+    var swipeTextAlignment by remember { mutableStateOf(Alignment.Center) }
+    var swipeBackground by remember { mutableStateOf(Color.Transparent) }
     val swipeThreshold = 100.dp.value * context.resources.displayMetrics.density
 
     val passwordColor = if (isSystemInDarkTheme()) {
@@ -58,18 +64,28 @@ fun AccountItem(
     Column {
         Layout(
             content = {
+                if (isSwiped && swipeDirection == "right") {
+                    swipeText = "Edit"
+                    swipeBackground = passwordColor
+                    swipeTextAlignment = Alignment.CenterStart
+                }
+                if (isSwiped && swipeDirection == "left") {
+                    swipeText = "Delete"
+                    swipeBackground = Color.Red
+                    swipeTextAlignment = Alignment.CenterEnd
+                }
                 if (isSwiped) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(80.dp)
-                            .background(passwordColor)
+                            .background(swipeBackground)
                     ) {
                         Text(
-                            text = "Edit",
+                            text = swipeText,
                             modifier = Modifier
-                                .align(Alignment.CenterStart)
-                                .padding(start = 16.dp),
+                                .align(swipeTextAlignment)
+                                .padding(start = 16.dp, end = 16.dp),
                             color = Color.White
                         )
                     }
@@ -83,18 +99,23 @@ fun AccountItem(
                         .pointerInput(Unit) {
                             detectHorizontalDragGestures(
                                 onDragEnd = {
-                                    if (offsetX > swipeThreshold) {
-                                        onEdit(account)
+                                    when {
+                                        offsetX > swipeThreshold -> {
+                                            onEdit(account)
+                                        }
+                                        offsetX < -swipeThreshold -> {
+                                            onDelete(account)
+                                        }
                                     }
                                     offsetX = 0f
                                     isSwiped = false
                                 },
                                 onHorizontalDrag = { _, dragAmount ->
                                     // Only allow swiping to the right (positive dragAmount)
-                                    if (dragAmount.toInt() != 0 || isSwiped) {
-                                        offsetX = (offsetX + dragAmount).coerceAtLeast(0f)
-                                        isSwiped = offsetX > 0
-                                    }
+                                    offsetX += dragAmount
+                                    isSwiped = abs(offsetX) > 0
+                                    swipeDirection = if (offsetX > 0) "right" else "left"
+
                                 }
                             )
                         }
