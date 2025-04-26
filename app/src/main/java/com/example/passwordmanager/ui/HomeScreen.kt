@@ -20,6 +20,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.passwordmanager.data.Account
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(navController: NavController, modifier: Modifier = Modifier, accounts: MutableList<Account>) {
@@ -27,9 +29,29 @@ fun HomeScreen(navController: NavController, modifier: Modifier = Modifier, acco
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
     var editingAccount by remember { mutableStateOf<Account?>(null) }
     var deletingAccount by remember { mutableStateOf<Account?>(null) }
+    var navigationInProgress by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
 
-    Box(
-    ) {
+    fun handleNavigateToCreate() {
+        if (navigationInProgress) return
+
+        navigationInProgress = true
+        coroutineScope.launch {
+            try {
+                navController.navigate("createAccount") {
+                    launchSingleTop = true
+                    popUpTo(navController.graph.startDestinationId)
+                    restoreState = true
+                }
+            } finally {
+                // Ensure we always reset after navigation attempt
+                delay(300) // Minimum time between navigations
+                navigationInProgress = false
+            }
+        }
+    }
+
+    Box {
         Column(
             modifier = modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -81,7 +103,10 @@ fun HomeScreen(navController: NavController, modifier: Modifier = Modifier, acco
                 .padding(bottom = 16.dp, end = 16.dp),
             contentAlignment = Alignment.BottomEnd
         ) {
-            FloatingAddButton { navController.navigate("createAccount") }
+            FloatingAddButton(
+                onClick = { handleNavigateToCreate() },
+                enabled = !navigationInProgress
+            )
         }
 
         // Edit Dialog
@@ -89,11 +114,7 @@ fun HomeScreen(navController: NavController, modifier: Modifier = Modifier, acco
             EditAccountDialog(
                 account = account,
                 onDismiss = { editingAccount = null },
-                onSave = { updatedAccount ->
-                    val index = accounts.indexOfFirst { it.getName() == account.getName() }
-                    if (index != -1) {
-                        accounts[index] = updatedAccount
-                    }
+                onSave = {
                     editingAccount = null
                 }
             )
@@ -145,11 +166,9 @@ fun EditAccountDialog(
         },
         confirmButton = {
             Button(onClick = {
-                val updatedAccount = Account().apply {
-                    setName(editedName)
-                    setPassword(editedPassword)
-                }
-                onSave(updatedAccount)
+                account.setName(editedName)
+                account.setPassword(editedPassword)
+                onSave(account)
             }) {
                 Text("Save")
             }
