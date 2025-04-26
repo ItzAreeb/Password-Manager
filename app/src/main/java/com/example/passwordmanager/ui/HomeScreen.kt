@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -26,7 +28,8 @@ fun HomeScreen(navController: NavController, modifier: Modifier = Modifier, acco
     var editingAccount by remember { mutableStateOf<Account?>(null) }
     var deletingAccount by remember { mutableStateOf<Account?>(null) }
 
-    Box {
+    Box(
+    ) {
         Column(
             modifier = modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -53,20 +56,31 @@ fun HomeScreen(navController: NavController, modifier: Modifier = Modifier, acco
                 it.getName().contains(searchQuery.text, ignoreCase = true)
             }
 
-            filteredAccounts.forEach { account ->
-                AccountItem(
-                    account = account,
-                    context = context,
-                    onEdit = { accountToEdit ->
-                        editingAccount = accountToEdit
-                    },
-                    onDelete = { accountToDelete ->
-                        deletingAccount = accountToDelete
-                    }
-                )
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)  // Takes remaining space
+            ) {
+                items(filteredAccounts) { account ->
+                    AccountItem(
+                        account = account,
+                        context = context,
+                        onEdit = { accountToEdit ->
+                            editingAccount = accountToEdit
+                        },
+                        onDelete = { accountToDelete ->
+                            deletingAccount = accountToDelete
+                        }
+                    )
+                }
             }
-
-            Spacer(modifier = Modifier.weight(1f))
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 16.dp, end = 16.dp),
+            contentAlignment = Alignment.BottomEnd
+        ) {
             FloatingAddButton { navController.navigate("createAccount") }
         }
 

@@ -16,23 +16,17 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun FloatingAddButton(onClick: () -> Unit) {
-    Box(
+    FloatingActionButton(
+        onClick = onClick,
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp),
-        contentAlignment = Alignment.BottomEnd
+            .size(58.dp)
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(17.dp),
     ) {
-        FloatingActionButton(
-            onClick = onClick,
-            modifier = Modifier
-                .size(58.dp),
-            shape = RoundedCornerShape(17.dp),
-        ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = "Create Account",
-                modifier = Modifier.size(40.dp)
-            )
-        }
+        Icon(
+            imageVector = Icons.Default.Add,
+            contentDescription = "Create Account",
+            modifier = Modifier.size(40.dp)
+        )
     }
 }
