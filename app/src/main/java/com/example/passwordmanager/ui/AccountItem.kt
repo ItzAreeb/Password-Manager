@@ -3,7 +3,6 @@ package com.example.passwordmanager.ui
 import android.content.ClipboardManager
 import android.content.Context
 import android.widget.Toast
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -37,7 +36,6 @@ import com.example.passwordmanager.data.Account
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AccountItem(
     account: Account,

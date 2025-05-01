@@ -1,5 +1,6 @@
 package com.example.passwordmanager.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -39,6 +40,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.passwordmanager.data.Account
 
+@SuppressLint("ConfigurationScreenWidthHeight")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateAccountScreen(navController: NavController, modifier: Modifier = Modifier, accounts: MutableList<Account>) {
