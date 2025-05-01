@@ -21,7 +21,7 @@ object EncryptionHelper {
     private const val ANDROID_KEYSTORE = "AndroidKeyStore"
     private const val FILE_NAME = "encrypted_accounts.json"
     private const val TRANSFORMATION = "AES/GCM/NoPadding"
-    private const val IV_LENGTH = 12 // 12 bytes for GCM
+    private const val IV_LENGTH = 12
 
     private fun getOrCreateSecretKey(): SecretKey {
         val keyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply {
