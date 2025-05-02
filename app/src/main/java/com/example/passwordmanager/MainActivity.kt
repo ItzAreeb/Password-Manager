@@ -1,8 +1,6 @@
 package com.example.passwordmanager
 
 import android.os.Bundle
-import android.security.keystore.KeyGenParameterSpec
-import android.security.keystore.KeyProperties
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -46,7 +44,7 @@ class MainActivity : ComponentActivity() {
                 }
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavHost(navController, startDestination = "home") {
-                        composable("home") { HomeScreen(navController, Modifier.padding(innerPadding), accounts) }
+                        composable("home") { HomeScreen(navController, accounts) }
                         composable("createAccount") { CreateAccountScreen(navController, Modifier, accounts) }
                     }
                 }
@@ -64,7 +62,7 @@ fun MainActivityPreview() {
 
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             NavHost(navController, startDestination = "home") {
-                composable("home") { HomeScreen(navController, Modifier.padding(innerPadding), accounts) }
+                composable("home") { HomeScreen(navController, accounts) }
                 composable("createAccount") { CreateAccountScreen(navController, Modifier.padding(innerPadding), accounts) }
             }
         }

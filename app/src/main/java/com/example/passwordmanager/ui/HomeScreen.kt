@@ -10,9 +10,28 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -23,13 +42,15 @@ import com.example.passwordmanager.data.Account
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController, modifier: Modifier = Modifier, accounts: MutableList<Account>) {
+fun HomeScreen(navController: NavController, accounts: MutableList<Account>) {
     val context = LocalContext.current
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
     var editingAccount by remember { mutableStateOf<Account?>(null) }
     var deletingAccount by remember { mutableStateOf<Account?>(null) }
     var navigationInProgress by remember { mutableStateOf(false) }
+    var showSettingsDialog by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
     fun handleNavigateToCreate() {
@@ -44,35 +65,50 @@ fun HomeScreen(navController: NavController, modifier: Modifier = Modifier, acco
                     restoreState = true
                 }
             } finally {
-                // Ensure we always reset after navigation attempt
-                delay(300) // Minimum time between navigations
+                delay(300)
                 navigationInProgress = false
             }
         }
     }
 
-    Box {
-        Column(
-            modifier = modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // Rounded Search Bar
-            TextField(
-                value = searchQuery,
-                onValueChange = { searchQuery = it },
-                label = { Text("Search...") },
-                singleLine = true,
-                shape = RoundedCornerShape(50.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                colors = TextFieldDefaults.colors(
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
-                )
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    TextField(
+                        value = searchQuery,
+                        onValueChange = { searchQuery = it },
+                        label = { Text("Search...") },
+                        singleLine = true,
+                        shape = RoundedCornerShape(50.dp),
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent
+                        ),
+                        trailingIcon = {
+                            IconButton(onClick = { showSettingsDialog = true }) {
+                                Icon(
+                                    imageVector = Icons.Default.Settings,
+                                    contentDescription = "Settings"
+                                )
+                            }
+                        }
+                    )
+                }
             )
-
+        },
+        floatingActionButton = {
+            FloatingAddButton(
+                onClick = { handleNavigateToCreate() },
+                enabled = !navigationInProgress
+            )
+        }
+    ) { innerPadding ->
+        Box(modifier = Modifier.padding(innerPadding)) {
             // Filtered Account List
             val filteredAccounts = accounts.filter {
                 it.getName().contains(searchQuery.text, ignoreCase = true)
@@ -81,56 +117,53 @@ fun HomeScreen(navController: NavController, modifier: Modifier = Modifier, acco
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)  // Takes remaining space
+                    .padding(horizontal = 8.dp)
             ) {
                 items(filteredAccounts) { account ->
                     AccountItem(
                         account = account,
                         context = context,
-                        onEdit = { accountToEdit ->
-                            editingAccount = accountToEdit
-                        },
-                        onDelete = { accountToDelete ->
-                            deletingAccount = accountToDelete
-                        }
+                        onEdit = { editingAccount = it },
+                        onDelete = { deletingAccount = it }
                     )
                 }
             }
-        }
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 16.dp, end = 16.dp),
-            contentAlignment = Alignment.BottomEnd
-        ) {
-            FloatingAddButton(
-                onClick = { handleNavigateToCreate() },
-                enabled = !navigationInProgress
-            )
-        }
 
-        // Edit Dialog
-        editingAccount?.let { account ->
-            EditAccountDialog(
-                account = account,
-                onDismiss = { editingAccount = null },
-                onSave = {
-                    editingAccount = null
-                }
-            )
-        }
-        deletingAccount?.let { account ->
-            DeleteAccountDialog(
-                account = account,
-                onDismiss = { deletingAccount = null },
-                onDelete = {
-                    val index = accounts.indexOfFirst { it.getName() == account.getName() }
-                    if (index != -1) {
-                        accounts.removeAt(index)
+            // Edit Dialog
+            editingAccount?.let { account ->
+                EditAccountDialog(
+                    account = account,
+                    onDismiss = { editingAccount = null },
+                    onSave = {
+                        editingAccount = null
                     }
-                    deletingAccount = null
-                }
-            )
+                )
+            }
+
+            // Delete Dialog
+            deletingAccount?.let { account ->
+                DeleteAccountDialog(
+                    account = account,
+                    onDismiss = { deletingAccount = null },
+                    onDelete = {
+                        accounts.remove(account)
+                        deletingAccount = null
+                    }
+                )
+            }
+
+            // Settings Dialog
+            if (showSettingsDialog) {
+                SettingsDialog(
+                    onDismiss = { showSettingsDialog = false },
+                    onImport = { importedAccounts ->
+                        accounts.clear()
+                        accounts.addAll(importedAccounts)
+                    },
+                    onExport = { accounts.toList() },
+                    onDeleteAll = { accounts.clear() }
+                )
+            }
         }
     }
 }

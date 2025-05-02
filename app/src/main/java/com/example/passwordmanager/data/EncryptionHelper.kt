@@ -44,10 +44,8 @@ object EncryptionHelper {
                     .setKeySize(256)
                     .build()
             )
-
             return keyGenerator.generateKey()
         }
-
         return keyStore.getKey(KEYSTORE_ALIAS, null) as SecretKey
     }
 
@@ -55,20 +53,12 @@ object EncryptionHelper {
         val secretKey = getOrCreateSecretKey()
         val cipher = Cipher.getInstance(TRANSFORMATION)
         cipher.init(Cipher.ENCRYPT_MODE, secretKey)
-
-        // Get IV for later decryption
         val iv = cipher.iv
-
-        // Convert accounts to JSON
         val jsonString = Gson().toJson(accounts)
         val encryptedBytes = cipher.doFinal(jsonString.toByteArray(StandardCharsets.UTF_8))
-
-        // Combine IV and encrypted data
         val outputStream = ByteArrayOutputStream()
         outputStream.write(iv)
         outputStream.write(encryptedBytes)
-
-        // Save to encrypted file
         val masterKey = MasterKey.Builder(context)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
@@ -102,24 +92,18 @@ object EncryptionHelper {
             val bytes = inputStream.readBytes()
 
             if (bytes.isEmpty()) return emptyList()
-
-            // Extract IV (first 12 bytes)
             val iv = bytes.copyOfRange(0, IV_LENGTH)
             val encryptedData = bytes.copyOfRange(IV_LENGTH, bytes.size)
-
-            // Decrypt data
             val secretKey = getOrCreateSecretKey()
             val cipher = Cipher.getInstance(TRANSFORMATION)
             val spec = GCMParameterSpec(128, iv)
             cipher.init(Cipher.DECRYPT_MODE, secretKey, spec)
-
             val decryptedBytes = cipher.doFinal(encryptedData)
             val jsonString = String(decryptedBytes, StandardCharsets.UTF_8)
 
             val type = object : TypeToken<List<Account>>() {}.type
             return Gson().fromJson(jsonString, type) ?: emptyList()
         } catch (e: Exception) {
-            // File doesn't exist or corrupted, return empty list
             return emptyList()
         }
     }
