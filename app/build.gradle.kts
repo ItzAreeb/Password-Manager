@@ -62,6 +62,7 @@ dependencies {
     implementation(libs.androidx.security.crypto)
     implementation(libs.gson)
     implementation(libs.androidx.datastore.preferences.core.android)
+    implementation(libs.androidx.material.icons.extended)
 
     // Test dependencies
     testImplementation(libs.junit)

@@ -26,7 +26,6 @@ fun HomeScreen(
 ) {
     val context = LocalContext.current
     var searchQuery by remember { mutableStateOf(TextFieldValue("")) }
-    var editingAccount by remember { mutableStateOf<Account?>(null) }
     var deletingAccount by remember { mutableStateOf<Account?>(null) }
     var navigationInProgress by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
@@ -104,21 +103,12 @@ fun HomeScreen(
                     AccountItem(
                         account = account,
                         context = context,
-                        onEdit = { editingAccount = it },
+                        onEdit = { accountToEdit ->
+                            navController.navigate("createAccount/${accountToEdit.getName()}")
+                        },
                         onDelete = { deletingAccount = it }
                     )
                 }
-            }
-
-            // Edit Dialog
-            editingAccount?.let { account ->
-                EditAccountDialog(
-                    account = account,
-                    onDismiss = { editingAccount = null },
-                    onSave = {
-                        editingAccount = null
-                    }
-                )
             }
 
             // Delete Dialog
@@ -134,52 +124,6 @@ fun HomeScreen(
             }
         }
     }
-}
-
-@Composable
-fun EditAccountDialog(
-    account: Account,
-    onDismiss: () -> Unit,
-    onSave: (Account) -> Unit
-) {
-    var editedName by remember { mutableStateOf(account.getName()) }
-    var editedPassword by remember { mutableStateOf(account.getPassword()) }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Edit Account") },
-        text = {
-            Column {
-                OutlinedTextField(
-                    value = editedName,
-                    onValueChange = { editedName = it },
-                    label = { Text("Account Name") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = editedPassword,
-                    onValueChange = { editedPassword = it },
-                    label = { Text("Password") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        },
-        confirmButton = {
-            Button(onClick = {
-                account.setName(editedName)
-                account.setPassword(editedPassword)
-                onSave(account)
-            }) {
-                Text("Save")
-            }
-        },
-        dismissButton = {
-            Button(onClick = onDismiss) {
-                Text("Cancel")
-            }
-        }
-    )
 }
 
 @Composable

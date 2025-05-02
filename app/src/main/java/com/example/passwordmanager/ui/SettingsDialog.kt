@@ -106,7 +106,7 @@ fun SettingsScreen(
 
             // Import Section
             SettingsOption(
-                icon = Icons.Default.KeyboardArrowUp,
+                icon = Icons.Default.Upload,
                 text = "Import Accounts",
                 onClick = {
                     keyboardController?.hide()
@@ -124,7 +124,7 @@ fun SettingsScreen(
 
             // Export Section
             SettingsOption(
-                icon = Icons.Default.KeyboardArrowDown,
+                icon = Icons.Default.Download,
                 text = "Export Accounts",
                 onClick = {
                     keyboardController?.hide()

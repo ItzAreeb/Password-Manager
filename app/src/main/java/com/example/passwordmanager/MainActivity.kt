@@ -48,19 +48,19 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     contentWindowInsets = WindowInsets(0, 0, 0, 0)
                 ) {
-                    NavHost(
-                        navController = navController,
-                        startDestination = "home",
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        composable("home") {
-                            HomeScreen(navController = navController, accounts = accounts)
-                        }
+                    NavHost(navController, startDestination = "home") {
+                        composable("home") { HomeScreen(navController, accounts) }
                         composable("createAccount") {
+                            CreateAccountScreen(navController, Modifier, accounts)
+                        }
+                        composable("createAccount/{accountName}") { backStackEntry ->
+                            val accountName = backStackEntry.arguments?.getString("accountName")
+                            val account = accounts.find { it.getName() == accountName }
                             CreateAccountScreen(
                                 navController = navController,
                                 modifier = Modifier,
-                                accounts = accounts
+                                accounts = accounts,
+                                existingAccount = account
                             )
                         }
                         composable("settings") {
