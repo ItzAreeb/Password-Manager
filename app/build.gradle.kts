@@ -63,6 +63,8 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.androidx.datastore.preferences.core.android)
     implementation(libs.androidx.material.icons.extended)
+    implementation(libs.androidx.biometric)
+    implementation(libs.androidx.fragment.ktx)
 
     // Test dependencies
     testImplementation(libs.junit)

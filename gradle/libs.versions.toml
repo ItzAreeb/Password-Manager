@@ -1,5 +1,6 @@
 [versions]
 agp = "8.6.1"
+biometricVersion = "1.2.0-alpha05"
 gsonVersion = "2.10.1"
 kotlin = "1.9.0"
 coreKtx = "1.16.0"
@@ -13,8 +14,11 @@ navigation = "2.8.9"
 securityCrypto = "1.1.0-alpha07"
 uiTestAndroid = "1.8.0"
 datastorePreferencesCoreAndroid = "1.1.5"
+biometricKtx = "1.1.0"
+fragmentKtx = "1.8.6"
 
 [libraries]
+androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "biometricVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCrypto" }
@@ -35,6 +39,8 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
 androidx-ui-test-android = { group = "androidx.compose.ui", name = "ui-test-android", version.ref = "uiTestAndroid" }
 androidx-datastore-preferences-core-android = { group = "androidx.datastore", name = "datastore-preferences-core-android", version.ref = "datastorePreferencesCoreAndroid" }
+androidx-biometric-ktx = { group = "androidx.biometric", name = "biometric-ktx", version.ref = "biometricKtx" }
+androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragmentKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

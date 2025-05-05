@@ -20,8 +20,10 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import com.example.passwordmanager.data.Account
+import com.example.passwordmanager.ui.security.SecurityManager
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.BufferedReader
@@ -31,6 +33,8 @@ import java.io.InputStreamReader
 @Composable
 fun SettingsScreen(
     navController: NavController,
+    securityManager: SecurityManager,
+    onSecurityChanged: (Boolean) -> Unit,
     onImport: (List<Account>) -> Unit,
     onExport: () -> List<Account>,
     onDeleteAll: () -> Unit
@@ -41,6 +45,7 @@ fun SettingsScreen(
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var successMessage by remember { mutableStateOf<String?>(null) }
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showSecurityDialog by remember { mutableStateOf(false) }
 
     // File picker launchers
     val importLauncher = rememberLauncherForActivityResult(
@@ -103,6 +108,26 @@ fun SettingsScreen(
                 .padding(horizontal = 16.dp)
         ) {
             Spacer(modifier = Modifier.height(16.dp))
+
+            // Security Section
+            SettingsOption(
+                icon = if (securityManager.isSecurityEnabled()) {
+                    Icons.Default.Lock
+                } else {
+                    Icons.Default.LockOpen
+                },
+                text = if (securityManager.isSecurityEnabled()) {
+                    "App Lock: Enabled"
+                } else {
+                    "App Lock: Disabled"
+                },
+                onClick = {
+                    keyboardController?.hide()
+                    showSecurityDialog = true
+                }
+            )
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
             // Import Section
             SettingsOption(
@@ -179,6 +204,17 @@ fun SettingsScreen(
                     }
                 )
             }
+            if (showSecurityDialog) {
+                SecuritySettingsDialog(
+                    securityManager = securityManager,
+                    onDismiss = { showSecurityDialog = false },
+                    onSecurityChanged = { enabled ->
+                        onSecurityChanged(enabled)
+                        showSecurityDialog = false
+                    },
+                    context = context
+                )
+            }
         }
     }
 }
@@ -252,4 +288,55 @@ private fun SettingsOption(
             )
         }
     }
+}
+
+@Composable
+private fun SecuritySettingsDialog(
+    securityManager: SecurityManager,
+    onDismiss: () -> Unit,
+    onSecurityChanged: (Boolean) -> Unit,
+    context: android.content.Context
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("App Security") },
+        text = {
+            Column {
+                if (securityManager.isSecurityEnabled()) {
+                    Text("Do you want to disable app lock?")
+                } else {
+                    Text("Enable security to protect your passwords with:")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("• Fingerprint")
+                    Text("• PIN")
+                    Text("• Pattern")
+                    Text("• Password")
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (securityManager.isSecurityEnabled()) {
+                        securityManager.setSecurityEnabled(false)
+                        onSecurityChanged(false)
+                    } else {
+                        (context as? FragmentActivity)?.let { activity ->
+                            securityManager.setupSecurity(activity) {
+                                onSecurityChanged(true)
+                            }
+                        }
+                    }
+                    onDismiss()
+                }
+            ) {
+                Text(if (securityManager.isSecurityEnabled()) "Disable" else "Enable")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }
