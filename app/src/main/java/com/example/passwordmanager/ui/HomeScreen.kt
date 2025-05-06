@@ -42,7 +42,7 @@ fun HomeScreen(
                     restoreState = true
                 }
             } finally {
-                delay(300)
+                delay(0)
                 navigationInProgress = false
             }
         }

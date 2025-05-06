@@ -3,6 +3,7 @@ package com.example.passwordmanager.data
 import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import android.widget.Toast
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKey
 import com.google.gson.Gson
@@ -50,6 +51,11 @@ object EncryptionHelper {
     }
 
     fun saveAccounts(context: Context, accounts: List<Account>) {
+        val file = File(context.filesDir, FILE_NAME)
+        if (file.exists()) {
+            file.delete()
+            Toast.makeText(context, file.name, Toast.LENGTH_SHORT).show()
+        }
         val secretKey = getOrCreateSecretKey()
         val cipher = Cipher.getInstance(TRANSFORMATION)
         cipher.init(Cipher.ENCRYPT_MODE, secretKey)
