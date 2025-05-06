@@ -150,7 +150,7 @@ fun AccountItem(
                         // Username text with dynamic truncation
                         Text(
                             text = account.getName(),
-                            fontSize = 25.sp,
+                            fontSize = 22.sp,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier

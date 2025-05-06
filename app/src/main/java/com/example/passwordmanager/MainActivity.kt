@@ -7,7 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -49,9 +48,9 @@ class MainActivity : FragmentActivity() {
                     accounts.addAll(loadedAccounts)
                 }
 
-                // Save accounts when they change
-                DisposableEffect(accounts) {
-                    onDispose {
+                // Save accounts immediately when modified
+                LaunchedEffect(accounts) {
+                    if (accounts.isNotEmpty()) { // Only save if accounts exist
                         EncryptionHelper.saveAccounts(this@MainActivity, accounts)
                     }
                 }
@@ -79,7 +78,7 @@ class MainActivity : FragmentActivity() {
                                 )
                             }
                             composable("createAccount") {
-                                CreateAccountScreen(navController, Modifier, accounts)
+                                CreateAccountScreen(navController, Modifier, accounts, context = this@MainActivity)
                             }
                             composable("createAccount/{accountName}") { backStackEntry ->
                                 val accountName = backStackEntry.arguments?.getString("accountName")
@@ -88,7 +87,8 @@ class MainActivity : FragmentActivity() {
                                     navController = navController,
                                     modifier = Modifier,
                                     accounts = accounts,
-                                    existingAccount = account
+                                    existingAccount = account,
+                                    context = this@MainActivity
                                 )
                             }
                             composable("settings") {

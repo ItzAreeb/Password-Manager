@@ -1,6 +1,7 @@
 package com.example.passwordmanager.ui
 
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -39,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.passwordmanager.data.Account
+import com.example.passwordmanager.data.EncryptionHelper
 
 @SuppressLint("ConfigurationScreenWidthHeight")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,7 +49,8 @@ fun CreateAccountScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
     accounts: MutableList<Account>,
-    existingAccount: Account? = null
+    existingAccount: Account? = null,
+    context: Context
 ) {
     var username by remember { mutableStateOf(TextFieldValue(existingAccount?.getName() ?: "")) }
     var password by remember { mutableStateOf(TextFieldValue(existingAccount?.getPassword() ?: "")) }
@@ -161,6 +164,7 @@ fun CreateAccountScreen(
                             accounts.add(newAccount)
                         }
                     }
+                    EncryptionHelper.saveAccounts(context, accounts)
                     navController.popBackStack()
                 },
                 modifier = Modifier.fillMaxWidth()
